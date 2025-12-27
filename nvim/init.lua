@@ -190,6 +190,9 @@ require("lazy").setup({
       vim.keymap.set("n", "<leader>ff", tb.find_files, { silent = true })
       vim.keymap.set("n", "<leader>fg", tb.live_grep, { silent = true })
       vim.keymap.set("n", "<leader>fb", tb.buffers,   { silent = true })
+      vim.keymap.set("n", "<leader>ds", tb.lsp_document_symbols,   { silent = true })
+      vim.keymap.set("n", "<leader>ws", tb.lsp_dynamic_workspace_symbols,   { silent = true })
+      vim.keymap.set("n", "<leader>od", tb.diagnostics,   { silent = true })
     end
   },
 
@@ -233,10 +236,10 @@ local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 -- Definisci/estendi la config di clangd
 vim.lsp.config("clangd", {
-  cmd = { "clangd", "--background-index", "--clang-tidy" },
+  cmd = { "clangd", "--background-index", "--clang-tidy", "--query-driver=/usr/bin/g++"},
   capabilities = capabilities,
   filetypes = { "c", "cpp", "objc", "objcpp" },
-  root_markers = { "compile_commands.json", "compile_flags.txt", ".git" },
+  root_markers = { "compile_commands.json", "Makefile", "compile_flags.txt", ".git" },
 })
 
 -- Abilita clangd
