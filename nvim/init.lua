@@ -19,17 +19,22 @@ vim.opt.smartindent = true
 
 -- Make
 vim.opt.makeprg = "make -j"
-vim.keymap.set("n", "<leader>m", "<cmd>make<cr>", { silent = true })
-vim.keymap.set("n", "<leader>co", "<cmd>copen<cr>", { silent = true })
-vim.keymap.set("n", "<leader>cc", "<cmd>cclose<cr>", { silent = true })
-vim.keymap.set("n", "]q", "<cmd>cnext<cr>", { silent = true })
-vim.keymap.set("n", "[q", "<cmd>cprev<cr>", { silent = true })
+vim.keymap.set("n", "<leader>m", "<cmd>make<cr>", { desc = '[M]ake', silent = true })
+vim.keymap.set("n", "<leader>co", "<cmd>copen<cr>", { desc = 'Quickfix open', silent = true })
+vim.keymap.set("n", "<leader>cc", "<cmd>cclose<cr>", { desc = 'Quickfix close', silent = true })
+vim.keymap.set("n", "]q", "<cmd>cnext<cr>", { desc = 'Quikcfix next element', silent = true })
+vim.keymap.set("n", "[q", "<cmd>cprev<cr>", { desc = 'Quickfix prev element', silent = true })
 
 vim.keymap.set("n", "<leader>mt", function()
   vim.cmd("make " .. vim.fn.input("make target: "))
-end, { silent = true })
+end, { desc = "Make Target", silent = true })
 
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<cr>", { silent = true })
+-- Splitting Buffers
+vim.keymap.set("n", "<leader>|", "<cmd>vsplit<cr>", { desc = 'Vertical Split', silent = true })
+vim.keymap.set("n", "<leader>-", "<cmd>split<cr>", { desc = 'Horizontal Split', silent = true })
+
+-- Removed Search Highlights
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = 'Deselect Search Highlight', silent = true })
 
 -- =========================
 -- lazy.nvim
@@ -172,7 +177,7 @@ require("lazy").setup({
       vim.keymap.set("n", "<leader>ac", function()
         enabled = not enabled
         vim.notify("autocomplete: " .. (enabled and "ON" or "OFF"))
-      end, { silent = true })
+      end, { desc = "Autocomplete Status", silent = true })
     end
   },
 
@@ -187,12 +192,13 @@ require("lazy").setup({
     config = function()
       require("telescope").setup({})
       local tb = require("telescope.builtin")
-      vim.keymap.set("n", "<leader>ff", tb.find_files, { silent = true })
-      vim.keymap.set("n", "<leader>fg", tb.live_grep, { silent = true })
-      vim.keymap.set("n", "<leader>fb", tb.buffers,   { silent = true })
-      vim.keymap.set("n", "<leader>ds", tb.lsp_document_symbols,   { silent = true })
-      vim.keymap.set("n", "<leader>ws", tb.lsp_dynamic_workspace_symbols,   { silent = true })
-      vim.keymap.set("n", "<leader>od", tb.diagnostics,   { silent = true })
+      vim.keymap.set("n", "<leader>ff", tb.find_files, { desc = "Find File", silent = true })
+      vim.keymap.set("n", "<leader>fg", tb.live_grep, { desc = "Live Grep", silent = true })
+      vim.keymap.set("n", "<leader>fb", tb.buffers,   { desc = "Find Buffers", silent = true })
+      vim.keymap.set("n", "<leader>ds", tb.lsp_document_symbols,   { desc = "Find Symbols", silent = true })
+      vim.keymap.set("n", "<leader>ws", tb.lsp_dynamic_workspace_symbols,   { desc = "Find Workspace Symbols", silent = true })
+      vim.keymap.set("n", "<leader>od", tb.diagnostics,   { desc = "Open Diagnostic", silent = true })
+      vim.keymap.set("n", "<leader>fz", tb.current_buffer_fuzzy_find, { desc = "Fuzzy Find", silent = true })
     end
   },
 
@@ -236,21 +242,17 @@ local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 -- Definisci/estendi la config di clangd
 vim.lsp.config("clangd", {
-  cmd = { "clangd", "--background-index", "--clang-tidy", "--query-driver=/usr/bin/g++"},
+  cmd = { 
+      "clangd",
+      "--background-index",
+      "--clang-tidy",
+      "--query-driver=/usr/bin/g++,/usr/local/cuda/bin/nvcc",
+      "--header-insertion=never",
+  },
   capabilities = capabilities,
-  filetypes = { "c", "cpp", "objc", "objcpp" },
+  filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
   root_markers = { "compile_commands.json", "Makefile", "compile_flags.txt", ".git" },
 })
 
 -- Abilita clangd
 vim.lsp.enable("clangd")
-
-
--- =========================
--- Diagnostica globale
--- =========================
-vim.keymap.set("n", "<leader>q", function()
-  vim.diagnostic.setqflist()
-  vim.cmd("copen")
-end, { silent = true })
-
